@@ -42,3 +42,10 @@ next-env.d.ts
 
 # brag scratch
 /brag-output/snapshots*
+
+# iOS
+/ios/build/
+/ios/**/xcuserdata/
+/ios/Packages/FlowFiCore/.build/
+/ios/Packages/FlowFiCore/.swiftpm/
+*.xcresult

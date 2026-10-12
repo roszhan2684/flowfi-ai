@@ -282,12 +282,13 @@ export function Stack() {
   const items = [
     ["Forecast engine", "Deterministic TypeScript, integer cents, replay-stable"],
     ["Copilot", "11 typed tools, structured responses, proposals only"],
+    ["Native iOS", "SwiftUI + FlowFiCore in Swift, parity-tested, Keychain + Face ID"],
     ["Backend", "Next.js route handlers, stateless, schema-validated"],
     ["Evidence", "Vitest suite: money math, fixtures, guardrails, faults"],
   ];
   return (
     <section className="w-full px-4 pb-10 md:px-10 xl:px-16">
-      <div className="grid gap-px overflow-hidden rounded-[28px] border border-line bg-line md:grid-cols-4">
+      <div className="grid gap-px overflow-hidden rounded-[28px] border border-line bg-line md:grid-cols-3 xl:grid-cols-5">
         {items.map(([k, v], i) => (
           <Reveal key={k} delay={i * 0.06} className="bg-bg p-6">
             <div className="text-[15px] font-medium">{k}</div>

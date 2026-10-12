@@ -4,6 +4,8 @@
 
 **Live demo:** https://flowfi-ai.vercel.app · runs entirely on fictional data for *Northstar Studio*. No sign-up, no keys.
 
+**Native iOS app (SwiftUI):** [`ios/`](ios/): same engine ported to Swift (`FlowFiCore`), parity-tested against the web numbers, with a Keychain + Face ID vault and the guided tour. See [ios/README.md](ios/README.md).
+
 **Launch film (24s, voiceover):** [`public/flowfi-film.mp4`](public/flowfi-film.mp4), built with HyperFrames from [`brag-output/composition`](brag-output/composition). Every number in it is real engine output.
 
 > Honesty first: this is a portfolio build. Everything under **Measured evidence** was produced by code in this repo. Everything under **Roadmap** is not built yet.
@@ -81,7 +83,8 @@ All numbers below were produced by commands in this repo. Re-run them yourself.
 
 | What | Command | Result |
 |---|---|---|
-| Unit, fixture and guardrail tests | `npm test` | **37 / 37 passing** |
+| Unit, fixture and guardrail tests (web) | `npm test` | **37 / 37 passing** |
+| Swift engine: parity with web, copilot guardrails, fault lab | `cd ios/Packages/FlowFiCore && swift test` | **19 / 19 passing** (same $4,836.68 low, 47 → 63 FlowScore, 8/8 faults) |
 | Fault lab (8 scenarios from spec §6.2) | `POST /api/fault-lab` or the button on `/` | **8 / 8 pass** (100 duplicate webhooks → 0 duplicate rows, 1 recompute) |
 | Forecast benchmark: full snapshot over 10,000 transactions, 3 scenarios + FlowScore + alerts, 60 runs | `npm run bench` | **median 8.19 ms · P95 9.25 ms** on Apple M4 Pro, Node 22.14 |
 
@@ -99,12 +102,12 @@ The benchmark pads the demo workspace with replayed history up to 10k rows. It m
 - **No LLM in the public demo.** The copilot is a deterministic intent router. AI-quality metrics (tool-selection accuracy across a 200–500 prompt gold set) are not measured yet.
 - **No database.** State lives in your browser (localStorage), and the server is stateless.
 - **No real bank connection.** The ingestion engine is provider-agnostic and exercised by a scripted provider. A Plaid Sandbox adapter is not built.
-- **No native iOS module.** The Swift Keychain/Face ID bridge from the spec is not part of this web build.
+- **iOS app is a separate native client**, not a React Native bridge: the spec's RN + Swift-module design was replaced by a fully native SwiftUI app with the same `FlowFiSecureVault` API (Keychain + LocalAuthentication). It is not on the App Store; run it from Xcode.
 - FlowScore is an internal indicator, **not a credit score**.
 
 ## Roadmap
 
-Plaid Sandbox adapter + webhooks · Postgres + Redis worker · React Native app with a Swift `FlowFiSecureVault` bridge · LLM provider behind the existing agent contract + gold-set evaluation harness.
+Plaid Sandbox adapter + webhooks · Postgres + Redis worker · TestFlight build of the iOS app · LLM provider behind the existing agent contract + gold-set evaluation harness.
 
 ## Local setup
 

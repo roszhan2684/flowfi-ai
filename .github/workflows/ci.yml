@@ -19,3 +19,13 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+
+  swift-core:
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: ios/Packages/FlowFiCore
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift --version
+      - run: swift test
