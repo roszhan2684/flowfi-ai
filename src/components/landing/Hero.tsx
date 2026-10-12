@@ -36,7 +36,7 @@ export function Hero() {
   return (
     <section className="grain relative overflow-hidden pt-28 pb-20 md:pt-36">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[-20%] left-1/2 h-[720px] w-[1100px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(158,240,192,0.16),transparent)] blur-2xl" />
+        <div className="absolute top-[-20%] left-1/2 h-[720px] w-[1100px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,var(--glow),transparent)] blur-2xl" />
         <div
           className="absolute inset-0 opacity-[0.35]"
           style={{
@@ -47,7 +47,7 @@ export function Hero() {
         />
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-4 md:px-6">
+      <div className="relative w-full px-4 md:px-10 xl:px-16">
         <motion.a
           href="/demo"
           initial={{ opacity: 0, y: 10 }}
@@ -87,7 +87,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 60, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.5, ease: EASE }}
-          className="relative mx-auto mt-14 max-w-5xl scroll-mt-28 rounded-[28px] select-none border border-line bg-surface/70 p-4 shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)] backdrop-blur-xl md:p-7"
+          className="relative mt-14 w-full scroll-mt-28 rounded-[28px] select-none border border-line bg-surface/70 p-4 shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)] backdrop-blur-xl md:p-7"
         >
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>

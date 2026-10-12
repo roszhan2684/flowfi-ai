@@ -4,6 +4,7 @@ import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "../shared/Logo";
+import { ThemeToggle } from "../shared/ThemeToggle";
 
 const LINKS = [
   ["Film", "#film"],
@@ -25,13 +26,13 @@ export function Nav() {
 
   return (
     <motion.header
-      className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4"
+      className="fixed inset-x-0 top-0 z-50"
       animate={{ y: hidden ? -90 : 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       <nav
-        className={`flex h-12 w-full max-w-5xl items-center justify-between rounded-full pr-1.5 pl-5 transition-all duration-500 ${
-          scrolled ? "border border-line bg-surface/70 shadow-2xl shadow-black/40 backdrop-blur-xl" : "border border-transparent"
+        className={`flex h-16 w-full items-center justify-between border-b px-5 transition-all duration-500 md:px-10 xl:px-16 ${
+          scrolled ? "border-line bg-bg/75 backdrop-blur-xl" : "border-transparent"
         }`}
       >
         <Link href="/" className="text-fg" aria-label="FlowFi home">
@@ -44,9 +45,12 @@ export function Nav() {
             </a>
           ))}
         </div>
-        <Link href="/demo" className="inline-flex h-9 items-center rounded-full bg-fg px-4 text-[13px] font-medium text-bg transition-transform active:scale-95">
-          Open demo
-        </Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link href="/demo" className="inline-flex h-9 items-center rounded-full bg-fg px-4 text-[13px] font-medium text-bg transition-transform active:scale-95">
+            Open demo
+          </Link>
+        </div>
       </nav>
     </motion.header>
   );

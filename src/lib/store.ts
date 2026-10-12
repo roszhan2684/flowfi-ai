@@ -27,14 +27,15 @@ export type ChatMessage =
 export type ApiLogEntry = { id: string; at: string; method: string; path: string; status: number; ms: number; note?: string };
 
 export const TOUR_STEPS = [
-  { id: "home", label: "See cash today + 30-day forecast" },
-  { id: "why", label: "Tap “Why” on the threshold alert" },
-  { id: "ask", label: "Ask the copilot “What should I do?”" },
-  { id: "evidence", label: "Open an evidence chip" },
-  { id: "approve", label: "Hold to approve the follow-up draft" },
-  { id: "toggle", label: "Toggle INV-104 paid on time" },
-  { id: "audit", label: "Check the audit trail" },
-  { id: "faults", label: "Run the fault lab" },
+  { id: "cash", label: "See cash today + 30-day forecast", title: "Cash today, and where it’s heading", body: "Live balance plus 7, 14 and 30-day projections, computed by the deterministic engine." },
+  { id: "why", label: "Spot the threshold alert", title: "One alert that matters", body: "FlowFi spots the Oct 23 dip below your $5,000 floor. Tap Why, or press Next." },
+  { id: "drivers", label: "See what drives the dip", title: "Drivers, not vibes", body: "A late invoice and a contractor payment cause the dip. Every bar is a real event." },
+  { id: "answer", label: "Ask the copilot “What should I do?”", title: "Ask the copilot", body: "It calls typed tools first, then answers using only the numbers they return." },
+  { id: "evidence", label: "Open an evidence chip", title: "Every number has a receipt", body: "Open Evidence to see the calculations and sources behind the answer." },
+  { id: "hold", label: "Hold to approve the follow-up draft", title: "Hold to approve", body: "The copilot only proposes. Press and hold the ring: nothing is sent or paid." },
+  { id: "presets", label: "Toggle INV-104 paid on time", title: "What if it pays on time?", body: "Toggle INV-104 and watch the low point and FlowScore recover." },
+  { id: "audit", label: "Check the audit trail", title: "Everything is audited", body: "AI runs, proposals, approvals and scenario changes, append-only." },
+  { id: "faults", label: "Run the fault lab", title: "Built for bad days", body: "Run duplicate webhooks, outages and crashes against the real sync engine." },
 ] as const;
 export type TourStep = (typeof TOUR_STEPS)[number]["id"];
 
@@ -50,6 +51,8 @@ type State = {
   chat: ChatMessage[];
   apiLog: ApiLogEntry[];
   tour: TourStep[];
+  tourStep: number | null;
+  tourAutoStarted: boolean;
   previousLow: { minor: number; date: string } | null;
 };
 
@@ -63,7 +66,8 @@ type Actions = {
   pushChat: (m: ChatMessage) => void;
   setActionStatus: (messageId: string, actionId: string, status: "approved" | "rejected") => void;
   logApi: (e: Omit<ApiLogEntry, "id" | "at">) => void;
-  completeTour: (s: TourStep) => void;
+  completeTour: (...s: TourStep[]) => void;
+  setTourStep: (n: number | null) => void;
   setPreviousLow: (v: State["previousLow"]) => void;
   reset: () => void;
 };
@@ -80,6 +84,8 @@ const initial: State = {
   chat: [],
   apiLog: [],
   tour: [],
+  tourStep: null,
+  tourAutoStarted: false,
   previousLow: null,
 };
 
@@ -128,12 +134,14 @@ export const useDemo = create<State & Actions>()(
           chat: s.chat.map((m) => (m.id === messageId && m.role === "assistant" ? { ...m, actionStatus: { ...m.actionStatus, [actionId]: status } } : m)),
         })),
       logApi: (e) => set((s) => ({ apiLog: [{ ...e, id: uid("req"), at: new Date().toISOString() }, ...s.apiLog].slice(0, 60) })),
-      completeTour: (step) => set((s) => (s.tour.includes(step) ? s : { tour: [...s.tour, step] })),
+      completeTour: (...steps) =>
+        set((s) => (steps.every((x) => s.tour.includes(x)) ? s : { tour: [...new Set([...s.tour, ...steps])] })),
+      setTourStep: (tourStep) => set({ tourStep, tourAutoStarted: true }),
       setPreviousLow: (previousLow) => set({ previousLow }),
-      reset: () => set({ ...initial }),
+      reset: () => set({ ...initial, tourAutoStarted: true }),
     }),
     {
-      name: "flowfi-demo-v1",
+      name: "flowfi-demo-v2",
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({ ...s, apiLog: [] }),
     },

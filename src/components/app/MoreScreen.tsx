@@ -200,7 +200,7 @@ export function AuditPage() {
   return (
     <div className="pb-6">
       <ScreenHeader title="Audit trail" back={() => nav.go("more")} subtitle="Append-only · newest first" />
-      <div className="px-4">
+      <div className="px-4" data-tour="audit">
         {audit.length === 0 ? (
           <Card className="text-center">
             <div className="text-[14px] font-semibold">No activity yet</div>
@@ -291,6 +291,7 @@ export function SyncPage() {
           </div>
         </Card>
 
+        <div data-tour="faultlab">
         <Card>
           <div className="flex items-center justify-between">
             <div>
@@ -315,6 +316,7 @@ export function SyncPage() {
           </ul>
           {results && <div className="mt-2 text-[11px] text-app-faint">{results.filter((r) => r.pass).length}/{results.length} passed in {ms} ms on the server.</div>}
         </Card>
+        </div>
 
         <Card>
           <Label>Roadmap, not in this demo</Label>

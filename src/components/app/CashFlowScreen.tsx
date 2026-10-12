@@ -99,6 +99,7 @@ export function CashFlowScreen() {
           </AnimatePresence>
         </Card>
 
+        <div data-tour="presets">
         <Card>
           <Label>Try an assumption</Label>
           <ul className="mt-2 divide-y divide-app-line">
@@ -113,7 +114,7 @@ export function CashFlowScreen() {
                   on={enabled.includes(p.id)}
                   onChange={() => {
                     toggle(p.id);
-                    if (p.id === "inv104_on_time") completeTour("toggle");
+                    if (p.id === "inv104_on_time") completeTour("presets");
                   }}
                 />
               </li>
@@ -121,6 +122,7 @@ export function CashFlowScreen() {
           </ul>
           <div className="mt-1 text-[11px] text-app-muted">{SCENARIO_RULES[scenario].label}</div>
         </Card>
+        </div>
 
         <Card>
           <button onClick={() => setShowAssumptions((v) => !v)} className="flex w-full items-center justify-between" aria-expanded={showAssumptions}>

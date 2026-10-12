@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-/* Design tokens. Marketing surfaces are dark; the product renders light inside
-   the device frame. One accent per surface, semantic risk colors always ship
-   with a text label. */
+/* Design tokens. Two site themes (dark default, light) share one product
+   palette inside the device frame. Theme = system preference unless the
+   visitor picks one (data-theme on <html>). Risk colors always ship with a
+   text label. */
 :root {
   --bg: #060807;
   --surface: #0c0f0e;
@@ -16,6 +17,9 @@
   --accent-ink: #062014;
   --risk: #ffb547;
   --neg: #ff7a6b;
+  --glow: rgba(158, 240, 192, 0.16);
+  --shadow: rgba(0, 0, 0, 0.8);
+  color-scheme: dark;
 
   --app-bg: #f4f3ef;
   --app-card: #ffffff;
@@ -31,6 +35,44 @@
   --app-neg-soft: #fde8e4;
 }
 
+:root[data-theme="light"] {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --raised: #ecebe5;
+  --line: rgb(13 17 16 / 0.08);
+  --line-strong: rgb(13 17 16 / 0.16);
+  --fg: #0d1110;
+  --muted: #565d59;
+  --dim: #7c827e;
+  --accent: #0c7650;
+  --accent-ink: #ffffff;
+  --risk: #a35f00;
+  --neg: #c2412f;
+  --glow: rgba(14, 122, 82, 0.12);
+  --shadow: rgba(13, 17, 16, 0.18);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --raised: #ecebe5;
+  --line: rgb(13 17 16 / 0.08);
+  --line-strong: rgb(13 17 16 / 0.16);
+  --fg: #0d1110;
+  --muted: #565d59;
+  --dim: #7c827e;
+  --accent: #0c7650;
+  --accent-ink: #ffffff;
+  --risk: #a35f00;
+  --neg: #c2412f;
+  --glow: rgba(14, 122, 82, 0.12);
+  --shadow: rgba(13, 17, 16, 0.18);
+  color-scheme: light;
+  }
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -44,6 +86,7 @@
   --color-accent-ink: var(--accent-ink);
   --color-risk: var(--risk);
   --color-neg: var(--neg);
+  --color-glow: var(--glow);
 
   --color-app-bg: var(--app-bg);
   --color-app-card: var(--app-card);
@@ -65,12 +108,12 @@
 
 html {
   background: var(--bg);
-  color-scheme: dark;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
+  transition: background-color 0.4s ease, color 0.4s ease;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

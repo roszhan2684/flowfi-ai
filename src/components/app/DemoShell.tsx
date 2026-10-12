@@ -2,11 +2,13 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SnapshotProvider } from "@/lib/client";
 import { TOUR_STEPS, useDemo } from "@/lib/store";
 import { PhoneFrame } from "../landing/PhoneStory";
 import { Logo } from "../shared/Logo";
+import { ThemeToggle } from "../shared/ThemeToggle";
+import { CoachMarks, useTourDriver } from "./CoachMarks";
 import { ActivityScreen } from "./ActivityScreen";
 import { CashFlowScreen } from "./CashFlowScreen";
 import { CopilotScreen } from "./CopilotScreen";
@@ -24,7 +26,21 @@ const TABS: Array<[Tab, string, React.ReactNode]> = [
 ];
 const ORDER: Tab[] = TABS.map((t) => t[0]);
 
+function TourDriver() {
+  useTourDriver();
+  return null;
+}
+
 function PhoneApp() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const autoStarted = useDemo((s) => s.tourAutoStarted);
+  const setTourStep = useDemo((s) => s.setTourStep);
+  useEffect(() => {
+    if (!autoStarted) {
+      const t = setTimeout(() => setTourStep(0), 900);
+      return () => clearTimeout(t);
+    }
+  }, [autoStarted, setTourStep]);
   const [tab, setTab] = useState<Tab>("home");
   const [page, setPage] = useState<Page>(null);
   const [sheet, setSheet] = useState<Sheet>(null);
@@ -71,7 +87,8 @@ function PhoneApp() {
 
   return (
     <NavContext.Provider value={nav}>
-      <div className="relative flex h-full flex-col bg-app-bg text-app-ink">
+      <TourDriver />
+      <div ref={rootRef} className="relative flex h-full flex-col bg-app-bg text-app-ink">
         <div className="relative flex-1 overflow-hidden">
           <AnimatePresence mode="popLayout" initial={false} custom={dir}>
             <motion.div
@@ -108,13 +125,16 @@ function PhoneApp() {
           })}
         </nav>
         <Sheets />
+        <CoachMarks container={rootRef} />
       </div>
     </NavContext.Provider>
   );
 }
 
-function Tour() {
+function Tour({ onPick }: { onPick?: () => void }) {
   const tour = useDemo((s) => s.tour);
+  const step = useDemo((s) => s.tourStep);
+  const setStep = useDemo((s) => s.setTourStep);
   const pct = (tour.length / TOUR_STEPS.length) * 100;
   return (
     <div>
@@ -123,23 +143,56 @@ function Tour() {
       <div className="mt-4 h-1 overflow-hidden rounded-full bg-raised">
         <motion.div className="h-full bg-accent" animate={{ width: `${pct}%` }} transition={{ ease: EASE }} />
       </div>
-      <ol className="mt-5 space-y-1">
+      <ol className="mt-4 space-y-0.5">
         {TOUR_STEPS.map((s, i) => {
           const done = tour.includes(s.id);
+          const current = step === i;
           return (
-            <li key={s.id} className="flex items-start gap-3 py-1.5">
-              <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border text-[10px] transition-colors ${done ? "border-accent bg-accent text-accent-ink" : "border-line-strong text-dim"}`}>
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span key={done ? "d" : "n"} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                    {done ? "✓" : i + 1}
-                  </motion.span>
-                </AnimatePresence>
-              </span>
-              <span className={`text-[13.5px] leading-snug transition-colors ${done ? "text-muted line-through decoration-dim" : "text-fg"}`}>{s.label}</span>
+            <li key={s.id}>
+              <button
+                onClick={() => {
+                  setStep(i);
+                  onPick?.();
+                }}
+                aria-current={current ? "step" : undefined}
+                className="relative flex w-full items-start gap-3 rounded-xl px-2.5 py-2 text-left"
+              >
+                {current && <motion.span layoutId="tour-current" className="absolute inset-0 rounded-xl bg-fg/[0.06] ring-1 ring-accent/50" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                <span className={`relative mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border text-[10px] transition-colors ${done ? "border-accent bg-accent text-accent-ink" : current ? "border-accent text-accent" : "border-line-strong text-dim"}`}>
+                  {done ? "✓" : i + 1}
+                </span>
+                <span className={`relative text-[13.5px] leading-snug transition-colors ${current ? "font-medium text-fg" : done ? "text-muted" : "text-fg/80"}`}>{s.label}</span>
+              </button>
             </li>
           );
         })}
       </ol>
+      <div className="mt-5 flex gap-2">
+        {step === null ? (
+          <button
+            onClick={() => {
+              setStep(0);
+              onPick?.();
+            }}
+            className="rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-accent-ink"
+          >
+            {tour.length ? "Restart tour" : "Start guided tour"}
+          </button>
+        ) : (
+          <>
+            <button onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0} className="rounded-full border border-line-strong px-3.5 py-2 text-[13px] disabled:opacity-40">
+              Back
+            </button>
+            <button onClick={() => setStep(step + 1 >= TOUR_STEPS.length ? null : step + 1)} className="rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-accent-ink">
+              {step + 1 >= TOUR_STEPS.length ? "Finish" : "Next"}
+            </button>
+            <button onClick={() => setStep(null)} className="ml-auto px-2 text-[13px] text-muted hover:text-fg">
+              Skip
+            </button>
+          </>
+        )}
+      </div>
+      <p className="mt-4 text-[11.5px] leading-relaxed text-dim">Use ← → to move, Esc to skip. Everything highlighted is the real, working app.</p>
     </div>
   );
 }
@@ -212,7 +265,7 @@ export function DemoShell() {
       /* Mobile: the app is the page. */
       <div className="fixed inset-0 h-[100dvh] bg-app-bg pt-[env(safe-area-inset-top)]">
         <PhoneApp />
-        <button onClick={() => setTourOpen(true)} className="absolute right-3 bottom-[calc(max(env(safe-area-inset-bottom),10px)+64px)] z-30 rounded-full bg-app-ink px-3 py-1.5 text-[11px] font-medium text-white shadow-lg">
+        <button onClick={() => setTourOpen(true)} aria-label="Open guided tour" className="absolute right-3 bottom-[calc(max(env(safe-area-inset-bottom),10px)+64px)] z-30 rounded-full bg-app-ink px-3 py-1.5 text-[11px] font-medium text-white shadow-lg">
           Tour
         </button>
         <AnimatePresence>
@@ -221,7 +274,7 @@ export function DemoShell() {
               <button onClick={() => setTourOpen(false)} className="mb-6 text-[13px] text-muted">
                 ✕ Close
               </button>
-              <Tour />
+              <Tour onPick={() => setTourOpen(false)} />
               <div className="mt-8 flex gap-3">
                 <Link href="/" className="rounded-full border border-line-strong px-4 py-2 text-[13px]">
                   ← Site
@@ -237,20 +290,21 @@ export function DemoShell() {
       ) : (
       /* Desktop: tour · device · console */
       <div className="grain relative min-h-screen">
-        <div aria-hidden className="pointer-events-none absolute top-1/2 left-1/2 h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(158,240,192,0.10),transparent)] blur-2xl" />
-        <header className="relative flex items-center justify-between px-8 py-5">
+        <div aria-hidden className="pointer-events-none absolute top-1/2 left-1/2 h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,var(--glow),transparent)] blur-2xl" />
+        <header className="relative flex items-center justify-between px-6 py-4 xl:px-10">
           <Link href="/" className="text-fg">
             <Logo />
           </Link>
           <div className="flex items-center gap-3 text-[12px]">
             <span className="rounded-full border border-line px-3 py-1.5 text-muted">Fictional demo data · Northstar Studio</span>
+            <ThemeToggle />
             <button onClick={reset} className="rounded-full border border-line-strong px-3 py-1.5 text-muted transition-colors hover:text-fg">
               Reset demo
             </button>
           </div>
         </header>
-        <div className="relative mx-auto grid max-w-[1320px] grid-cols-[1fr_auto_1fr] items-start gap-10 px-8 pb-10">
-          <motion.aside initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: EASE }} className="sticky top-8 max-w-[300px] justify-self-end pt-10">
+        <div className="relative grid w-full grid-cols-[minmax(260px,1fr)_auto_minmax(300px,1fr)] items-start gap-8 px-6 pb-8 xl:gap-14 xl:px-10">
+          <motion.aside initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: EASE }} className="sticky top-8 w-full max-w-[380px] justify-self-end pt-6">
             <Tour />
           </motion.aside>
           <motion.div initial={{ opacity: 0, y: 40, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.9, ease: EASE }}>
@@ -260,7 +314,7 @@ export function DemoShell() {
               </div>
             </PhoneFrame>
           </motion.div>
-          <motion.aside initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1, ease: EASE }} className="sticky top-8 h-[min(760px,calc(100vh-140px))] w-[320px] rounded-[24px] border border-line bg-surface/70 p-5 backdrop-blur">
+          <motion.aside initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1, ease: EASE }} className="sticky top-8 h-[min(800px,calc(100vh-120px))] w-full max-w-[460px] rounded-[24px] border border-line bg-surface/70 p-5 backdrop-blur">
             <Console />
           </motion.aside>
         </div>

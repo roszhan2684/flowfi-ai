@@ -31,7 +31,7 @@ export function Approve() {
   const [events, setEvents] = useState<string[]>([]);
   const [key, setKey] = useState(0);
   return (
-    <section className="relative mx-auto max-w-6xl px-4 py-28 md:px-6 md:py-40">
+    <section className="relative w-full px-4 py-28 md:px-10 xl:px-16 md:py-40">
       <div className="grid items-center gap-14 md:grid-cols-2">
         <div>
           <Reveal>
@@ -101,7 +101,7 @@ export function Score() {
   const C = Math.PI * R;
 
   return (
-    <section className="relative mx-auto max-w-6xl px-4 py-28 md:px-6 md:py-40">
+    <section className="relative w-full px-4 py-28 md:px-10 xl:px-16 md:py-40">
       <Reveal>
         <Eyebrow>FlowScore</Eyebrow>
       </Reveal>
@@ -135,7 +135,7 @@ export function Score() {
             role="switch"
             aria-checked={onTime}
             onClick={() => setOnTime((v) => !v)}
-            className="mt-10 flex items-center gap-3 rounded-full border border-line py-2 pr-4 pl-2 text-[14px] transition-colors hover:bg-white/5"
+            className="mt-10 flex items-center gap-3 rounded-full border border-line py-2 pr-4 pl-2 text-[14px] transition-colors hover:bg-fg/5"
           >
             <span className={`relative h-6 w-10 rounded-full transition-colors ${onTime ? "bg-accent" : "bg-raised"}`}>
               <motion.span layout className={`absolute top-1 size-4 rounded-full ${onTime ? "right-1 bg-accent-ink" : "left-1 bg-muted"}`} transition={{ type: "spring", stiffness: 500, damping: 32 }} />
@@ -195,7 +195,7 @@ export function Reliability() {
   const rows = results ?? PLACEHOLDER;
 
   return (
-    <section id="reliability" className="relative mx-auto max-w-6xl scroll-mt-24 px-4 py-28 md:px-6 md:py-40">
+    <section id="reliability" className="relative w-full scroll-mt-24 px-4 py-28 md:px-10 xl:px-16 md:py-40">
       <Reveal>
         <Eyebrow>Fault lab</Eyebrow>
       </Reveal>
@@ -207,7 +207,7 @@ export function Reliability() {
           <button
             onClick={run}
             disabled={state === "running"}
-            className="group inline-flex h-12 items-center gap-3 rounded-full border border-line-strong px-5 text-[15px] transition-colors hover:bg-white/5 disabled:opacity-60"
+            className="group inline-flex h-12 items-center gap-3 rounded-full border border-line-strong px-5 text-[15px] transition-colors hover:bg-fg/5 disabled:opacity-60"
           >
             <span className={`size-2 rounded-full ${state === "running" ? "animate-pulse bg-risk" : state === "done" ? "bg-accent" : "bg-muted"}`} />
             {state === "running" ? "Injecting faults…" : state === "done" ? "Run again" : "Run the fault lab"}
@@ -286,7 +286,7 @@ export function Stack() {
     ["Evidence", "Vitest suite: money math, fixtures, guardrails, faults"],
   ];
   return (
-    <section className="mx-auto max-w-6xl px-4 pb-10 md:px-6">
+    <section className="w-full px-4 pb-10 md:px-10 xl:px-16">
       <div className="grid gap-px overflow-hidden rounded-[28px] border border-line bg-line md:grid-cols-4">
         {items.map(([k, v], i) => (
           <Reveal key={k} delay={i * 0.06} className="bg-bg p-6">
@@ -302,7 +302,7 @@ export function Stack() {
 export function FinalCTA() {
   return (
     <section className="grain relative overflow-hidden px-4 py-36 text-center md:py-48">
-      <div aria-hidden className="pointer-events-none absolute bottom-[-40%] left-1/2 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(158,240,192,0.18),transparent)] blur-2xl" />
+      <div aria-hidden className="pointer-events-none absolute bottom-[-40%] left-1/2 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,var(--glow),transparent)] blur-2xl" />
       <h2 className="relative text-[clamp(48px,10vw,140px)] leading-[0.9] font-medium tracking-[-0.05em]">
         <SplitHeadline text="Run the" /> <span className="serif text-accent italic"><SplitHeadline text="numbers." delay={0.1} /></span>
       </h2>
@@ -315,7 +315,7 @@ export function FinalCTA() {
 
 export function Footer() {
   return (
-    <footer className="border-t border-line px-4 py-10 md:px-6">
+    <footer className="border-t border-line px-4 py-10 md:px-10 xl:px-16">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 text-[12px] text-dim md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2 text-muted">
           <LogoMark size={18} /> FlowFi · portfolio project
@@ -333,7 +333,7 @@ export function Footer() {
 
 export function Film() {
   return (
-    <section id="film" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 md:px-6 md:py-32">
+    <section id="film" className="w-full scroll-mt-24 px-4 py-24 md:px-10 xl:px-16 md:py-32">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <h2 className="text-[clamp(36px,6vw,72px)] leading-[0.98] font-medium tracking-[-0.04em]">
           <SplitHeadline text="24 seconds," /> <span className="serif text-accent italic"><SplitHeadline text="one dip." delay={0.1} /></span>

@@ -48,7 +48,7 @@ export function CopilotScreen() {
           ...data.proposedActions.map((a) => ({ id: newId("aud"), at: now, actor: "copilot" as const, action: "ai.proposed_action", entityType: "proposed_action", entityId: a.id, metadata: { type: a.type, title: a.title } })),
         ];
         pushAudit(...events);
-        if (data.intent === "next_step") completeTour("ask");
+        if (data.intent === "next_step") completeTour("answer");
       } catch (e) {
         pushChat({ id: newId("msg"), role: "error", text: (e as Error).message });
       } finally {
@@ -165,10 +165,10 @@ function Message({ m, animate }: { m: ChatMessage; animate: boolean }) {
     );
   if (m.role === "error")
     return <div className="rounded-2xl bg-app-neg-soft px-4 py-3 text-[13px] text-app-neg">Copilot unavailable: {m.text}. No numbers were shown.</div>;
-  return <Answer id={m.id} r={m.response} status={m.actionStatus} animate={animate} />;
+  return <Answer id={m.id} r={m.response} status={m.actionStatus} animate={animate} latest={animate} />;
 }
 
-function Answer({ id, r, status, animate }: { id: string; r: AgentResponse; status: Record<string, string>; animate: boolean }) {
+function Answer({ id, r, status, animate, latest }: { id: string; r: AgentResponse; status: Record<string, string>; animate: boolean; latest: boolean }) {
   const nav = useNav();
   const completeTour = useDemo((s) => s.completeTour);
   const [revealed, setRevealed] = useState(animate ? 0 : r.trace.length);
@@ -184,7 +184,7 @@ function Answer({ id, r, status, animate }: { id: string; r: AgentResponse; stat
   }, [revealed, done]);
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2.5" data-tour={latest ? "answer" : undefined}>
       <div className="space-y-1">
         {r.trace.slice(0, revealed).map((t, i) => (
           <motion.div key={i} initial={animate ? { opacity: 0, x: -6 } : false} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 font-mono text-[10.5px] text-app-muted">
@@ -227,6 +227,7 @@ function Answer({ id, r, status, animate }: { id: string; r: AgentResponse; stat
             {r.citations.length > 0 && (
               <div>
                 <button
+                  data-tour={latest ? "evidence" : undefined}
                   onClick={() => {
                     setShowEvidence((v) => !v);
                     completeTour("evidence");

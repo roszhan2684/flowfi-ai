@@ -37,7 +37,7 @@ function WhySheet() {
   const { data } = useSnap();
   const nav = useNav();
   const completeTour = useDemo((s) => s.completeTour);
-  useEffect(() => completeTour("why"), [completeTour]);
+  useEffect(() => completeTour("why", "drivers"), [completeTour]);
   if (!data) return null;
   const f = data.forecasts.base;
   const max = Math.max(...f.drivers.map((d) => Math.abs(d.impactMinor)), 1);
@@ -48,7 +48,7 @@ function WhySheet() {
       <div className="text-[12px] text-app-muted">
         Starting from {formatMoney(f.startBalanceMinor)} today. Dominant drivers between now and then:
       </div>
-      <ul className="mt-5 space-y-4">
+      <ul className="mt-5 space-y-4" data-tour="drivers">
         {f.drivers.map((d, i) => (
           <li key={d.name}>
             <div className="flex justify-between gap-3 text-[13px]">
@@ -152,7 +152,7 @@ function ActionSheet({ messageId, action, onDone }: { messageId: string; action:
     }
     applyEffect(data.effect);
     setStatus(messageId, action.id, "approved");
-    completeTour("approve");
+    completeTour("hold");
     setTimeout(onDone, 900);
   };
 
@@ -197,7 +197,7 @@ function ActionSheet({ messageId, action, onDone }: { messageId: string; action:
 
       {error && <div className="mt-3 rounded-xl bg-app-neg-soft p-2.5 text-[12px] text-app-neg">Rejected by server: {error}</div>}
 
-      <div className="mt-6 flex flex-col items-center gap-4">
+      <div className="mt-6 flex flex-col items-center gap-4" data-tour="hold">
         <HoldButton onConfirm={approve} />
         <button onClick={reject} className="text-[13px] font-medium text-app-muted">
           Reject

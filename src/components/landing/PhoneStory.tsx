@@ -38,7 +38,7 @@ export function PhoneStory() {
   return (
     <section ref={ref} className="relative h-[320vh]">
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-2 px-4 md:grid-cols-[1fr_auto] md:gap-10 md:px-6">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-2 px-4 md:grid-cols-[1fr_auto] md:gap-10 md:px-10 xl:px-16">
           <div className="relative z-10">
             <div className="mb-8 h-px w-40 overflow-hidden bg-line-strong">
               <motion.div className="h-full bg-accent" style={{ width: bar }} />

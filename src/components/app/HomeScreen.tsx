@@ -24,7 +24,7 @@ export function HomeScreen() {
   const setStale = useDemo((s) => s.setStale);
 
   useEffect(() => {
-    if (data) completeTour("home");
+    if (data) completeTour("cash");
   }, [data, completeTour]);
 
   if (error && !data) return <ErrorState message={error} retry={retry} />;
@@ -67,7 +67,7 @@ export function HomeScreen() {
         </motion.div>
       )}
 
-      <motion.div {...stagger(1)}>
+      <motion.div {...stagger(1)} data-tour="cash">
         <Card>
           <Label>Cash available today</Label>
           <Money minor={data.cash.availableMinor} className="mt-1 block text-[38px] leading-none font-semibold tracking-tight" />
@@ -108,7 +108,7 @@ export function HomeScreen() {
             <div className="mt-1 text-[12px] text-app-muted">
               Low of <span className="tnum font-medium text-app-ink">{formatMoney(f.breach.minBalanceMinor)}</span> — {formatMoney(f.breach.shortfallMinor)} under your floor.
             </div>
-            <button onClick={() => nav.open({ kind: "why" })} className="mt-3 rounded-full bg-app-ink px-4 py-2 text-[13px] font-medium text-white">
+            <button data-tour="why" onClick={() => nav.open({ kind: "why" })} className="mt-3 rounded-full bg-app-ink px-4 py-2 text-[13px] font-medium text-white">
               Why?
             </button>
           </Card>

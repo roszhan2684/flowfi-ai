@@ -22,7 +22,7 @@ export function Receipts() {
   };
 
   return (
-    <section id="copilot" className="relative mx-auto max-w-6xl scroll-mt-24 px-4 py-28 md:px-6 md:py-40">
+    <section id="copilot" className="relative w-full scroll-mt-24 px-4 py-28 md:px-10 xl:px-16 md:py-40">
       <Reveal>
         <Eyebrow>Copilot</Eyebrow>
       </Reveal>
