@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>FlowFi — launch film</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="assets/audio-energy.js"></script>
+    <style>
+      @font-face { font-family: "Geist"; src: url("assets/fonts/Geist-Regular.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Geist"; src: url("assets/fonts/Geist-Medium.woff2") format("woff2"); font-weight: 500; }
+      @font-face { font-family: "Geist Mono"; src: url("assets/fonts/GeistMono-Regular.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Instrument Serif"; src: url("assets/fonts/InstrumentSerif-Italic.woff2") format("woff2"); font-style: italic; font-weight: 400; }
+
+      :root {
+        --bg: #060807; --surface: #0c0f0e; --raised: #141917;
+        --line: rgba(236, 241, 236, 0.1); --fg: #eef1ec; --muted: #8e9691;
+        --accent: #9ef0c0; --accent-ink: #062014; --risk: #ffb547;
+      }
+      body { margin: 0; background: var(--bg); color: var(--fg); font-family: "Geist", system-ui, sans-serif; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+      .clip { position: absolute; inset: 0; }
+      .inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .tnum { font-variant-numeric: tabular-nums; }
+      .serif { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; color: var(--accent); }
+      .mono { font-family: "Geist Mono", monospace; }
+      .eyebrow { font-family: "Geist Mono", monospace; font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+      #glow { position: absolute; left: 50%; top: 50%; width: 1500px; height: 1000px; margin: -500px 0 0 -750px;
+        background: radial-gradient(closest-side, rgba(158, 240, 192, 0.16), transparent); opacity: 0.5; }
+      #grid { position: absolute; inset: 0; opacity: 0.25;
+        background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 96px 96px; -webkit-mask-image: radial-gradient(ellipse 65% 60% at 50% 45%, #000 20%, transparent 75%); }
+
+      /* Scene 1 */
+      #s1-cash { font-size: 220px; font-weight: 500; letter-spacing: -0.05em; line-height: 1; }
+      #s1-tag { margin-top: 36px; display: flex; gap: 18px; align-items: center; }
+      .pill { display: inline-flex; align-items: center; gap: 12px; border-radius: 999px; padding: 12px 24px; font-size: 26px; font-weight: 500; }
+      .pill-accent { background: rgba(158, 240, 192, 0.13); color: var(--accent); }
+      .pill-risk { background: rgba(255, 181, 71, 0.14); color: var(--risk); }
+      .dot { width: 12px; height: 12px; border-radius: 50%; background: currentColor; }
+
+      /* Chart card */
+      .chart-card { position: relative; width: 1560px; height: 760px; border-radius: 44px; border: 1px solid var(--line);
+        background: rgba(12, 15, 14, 0.85); box-shadow: 0 60px 140px -50px rgba(0, 0, 0, 0.9); }
+      .chart-head { position: absolute; left: 64px; right: 64px; top: 56px; display: flex; justify-content: space-between; align-items: flex-end; }
+      .low { font-size: 96px; font-weight: 500; letter-spacing: -0.04em; line-height: 1; margin-top: 18px; }
+      .low small { font-size: 30px; color: var(--muted); letter-spacing: 0; margin-left: 20px; font-weight: 400; }
+      .chart-svg { position: absolute; left: 64px; right: 64px; bottom: 60px; width: 1432px; height: 420px; overflow: visible; }
+      .floor-label { position: absolute; right: 64px; font-family: "Geist Mono", monospace; font-size: 20px; letter-spacing: 0.12em; color: var(--risk); }
+      #s2-pin { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--risk); border: 6px solid var(--bg); }
+      #s2-pinlabel { position: absolute; white-space: nowrap; background: #2a2213; }
+
+      /* Scene 3 */
+      .row3 { display: flex; gap: 48px; align-items: stretch; }
+      .card { border-radius: 40px; border: 1px solid var(--line); background: var(--surface); padding: 56px; box-sizing: border-box; }
+      .driver { margin-top: 44px; }
+      .driver-top { display: flex; justify-content: space-between; font-size: 32px; gap: 40px; }
+      .driver-top span:last-child { color: var(--muted); }
+      .bar { margin-top: 18px; height: 16px; border-radius: 99px; background: var(--raised); overflow: hidden; }
+      .bar i { display: block; height: 100%; border-radius: 99px; background: var(--risk); width: 0; }
+      .chip { display: flex; align-items: center; gap: 16px; font-family: "Geist Mono", monospace; font-size: 26px; color: var(--muted); margin-top: 14px; }
+      .chip b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 18px; font-weight: 400; }
+      .chip.prop b { background: var(--risk); }
+      .answer { margin-top: 40px; font-size: 40px; line-height: 1.45; letter-spacing: -0.01em; }
+      .money { background: rgba(158, 240, 192, 0.14); color: var(--accent); border-radius: 12px; padding: 2px 12px; font-weight: 500; white-space: nowrap; }
+
+      /* Scene 4 */
+      .action { width: 900px; text-align: left; }
+      .ring-wrap { position: relative; width: 220px; height: 220px; margin: 60px auto 0; }
+      .ring-wrap > svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+      #s4-core { position: absolute; inset: 30px; border-radius: 50%; display: grid; place-items: center; }
+      #s4-check { position: absolute; inset: 30px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; opacity: 0; }
+      .caption { font-size: 84px; font-weight: 500; letter-spacing: -0.04em; margin-top: 70px; }
+
+      /* Scene 5 */
+      .stats { display: flex; gap: 64px; align-items: flex-end; }
+      .stat-label { font-family: "Geist Mono", monospace; font-size: 20px; letter-spacing: 0.16em; color: var(--muted); text-transform: uppercase; }
+      .stat-val { font-size: 56px; font-weight: 500; letter-spacing: -0.03em; margin-top: 10px; }
+      #s5-logo-wrap { display: flex; flex-direction: column; align-items: center; }
+      .logo { display: flex; align-items: center; gap: 28px; font-size: 76px; font-weight: 500; letter-spacing: -0.03em; }
+      .tagline { font-size: 104px; font-weight: 500; letter-spacing: -0.045em; margin-top: 56px; line-height: 1.05; text-align: center; }
+      .url { margin-top: 48px; font-family: "Geist Mono", monospace; font-size: 30px; color: var(--muted); letter-spacing: 0.04em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="24.5">
+      <div id="glow"></div>
+      <div id="grid"></div>
+
+      <!-- Scene 1 — Today -->
+      <section id="s1" class="clip" data-start="0" data-duration="3.7" data-track-index="1">
+        <div class="inner" id="s1-in" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="eyebrow" id="s1-eyebrow">Cash today · Northstar Studio</div>
+          <div id="s1-cash" class="tnum">$12,180.00</div>
+          <div id="s1-tag"><span class="pill pill-accent"><span class="dot"></span>Looks fine</span></div>
+        </div>
+      </section>
+
+      <!-- Scene 2 — The dip -->
+      <section id="s2" class="clip" data-start="3.2" data-duration="6.0" data-track-index="2">
+        <div class="inner" id="s2-in" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="chart-card" id="s2-card">
+            <div class="chart-head">
+              <div>
+                <div class="eyebrow">Northstar Studio · next 30 days</div>
+                <div class="low tnum" id="s2-low">$4,836.68<small>lowest · Oct 23</small></div>
+              </div>
+              <span class="pill pill-risk" id="s2-flag"><span class="dot"></span>Below $5k floor</span>
+            </div>
+            <svg class="chart-svg" id="s2-svg" viewBox="0 0 1432 420" preserveAspectRatio="none"></svg>
+            <div class="floor-label" id="s2-floorlabel">$5,000 FLOOR</div>
+            <div id="s2-pin"></div>
+            <div id="s2-pinlabel" class="pill pill-risk tnum">$4,836.68 · Oct 23</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 3 — Why + receipts -->
+      <section id="s3" class="clip" data-start="8.74" data-duration="6.36" data-track-index="3">
+        <div class="inner" id="s3-in" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="row3">
+            <div class="card" id="s3-why" style="width: 720px">
+              <div class="eyebrow">Why Oct 23 dips</div>
+              <div class="driver" id="d1">
+                <div class="driver-top"><span>INV-104 paid late</span><span class="tnum">−$6,800.00</span></div>
+                <div class="bar"><i id="d1-bar"></i></div>
+              </div>
+              <div class="driver" id="d2">
+                <div class="driver-top"><span>Mara Okafor Design</span><span class="tnum">−$5,200.00</span></div>
+                <div class="bar"><i id="d2-bar"></i></div>
+              </div>
+              <div class="driver" id="d3">
+                <div class="driver-top"><span>Card statement</span><span class="tnum">−$3,960.00</span></div>
+                <div class="bar"><i id="d3-bar" style="background: #5b635f"></i></div>
+              </div>
+            </div>
+            <div class="card" id="s3-copilot" style="width: 860px">
+              <div class="eyebrow">Copilot · “What should I do?”</div>
+              <div style="margin-top: 26px">
+                <div class="chip" id="c1"><b>✓</b>get_forecast</div>
+                <div class="chip" id="c2"><b>✓</b>get_invoices</div>
+                <div class="chip" id="c3"><b>✓</b>run_scenario</div>
+                <div class="chip prop" id="c4"><b>✓</b>create_invoice_followup_draft</div>
+              </div>
+              <div class="answer" id="s3-answer">If INV-104 pays on time, your low becomes <span class="money tnum">$11,636.68</span>.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — Hold to approve -->
+      <section id="s4" class="clip" data-start="14.73" data-duration="4.27" data-track-index="4">
+        <div class="inner" id="s4-in" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="card action" id="s4-card">
+            <div style="display: flex; justify-content: space-between; align-items: center">
+              <div class="eyebrow">Proposed action</div>
+              <span class="pill pill-accent" style="font-size: 22px">Not sent</span>
+            </div>
+            <div style="font-size: 52px; font-weight: 500; letter-spacing: -0.02em; margin-top: 20px">Follow-up draft · INV-104</div>
+            <div class="ring-wrap">
+              <svg viewBox="0 0 220 220" width="220" height="220">
+                <circle cx="110" cy="110" r="100" stroke="rgba(236,241,236,0.16)" stroke-width="10" fill="none" />
+                <circle id="s4-ring" cx="110" cy="110" r="100" stroke="#9ef0c0" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="628.32" stroke-dashoffset="628.32" />
+              </svg>
+              <div id="s4-core">
+                <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#eef1ec" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M7 4.5H5.5a1 1 0 0 0-1 1V7M17 4.5h1.5a1 1 0 0 1 1 1V7M7 19.5H5.5a1 1 0 0 1-1-1V17M17 19.5h1.5a1 1 0 0 0 1-1V17" />
+                  <path d="M9 9.5v1M15 9.5v1M12 9.5v3.2l-1 .8M9.5 15.5c1.4 1 3.6 1 5 0" />
+                </svg>
+              </div>
+              <div id="s4-check">
+                <svg width="76" height="76" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke="#062014" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </div>
+            </div>
+          </div>
+          <div class="caption" id="s4-caption">Nothing moves <span class="serif">without you.</span></div>
+        </div>
+      </section>
+
+      <!-- Scene 5 — Recovery + outro -->
+      <section id="s5" class="clip" data-start="18.56" data-duration="5.94" data-track-index="5">
+        <div class="inner" id="s5-chart-in" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div class="chart-card" id="s5-card" style="height: 700px">
+            <div class="chart-head">
+              <div class="stats">
+                <div><div class="stat-label">Lowest point</div><div class="stat-val tnum" id="s5-low">$4,836.68</div></div>
+                <div><div class="stat-label">FlowScore</div><div class="stat-val tnum"><span id="s5-score">47</span> <span id="s5-band" style="font-size: 30px; color: #ffb547">Watch</span></div></div>
+              </div>
+              <span class="pill pill-accent" id="s5-flag"><span class="dot"></span>INV-104 on time</span>
+            </div>
+            <svg class="chart-svg" id="s5-svg" viewBox="0 0 1432 420" preserveAspectRatio="none" style="height: 380px"></svg>
+          </div>
+        </div>
+        <div class="inner" id="s5-logo-in" data-layout-allow-overlap data-layout-allow-occlusion>
+          <div id="s5-logo-wrap">
+            <div class="logo" id="s5-logo">
+              <svg width="88" height="88" viewBox="0 0 24 24" fill="none" style="color: #9ef0c0">
+                <rect x="1" y="1" width="22" height="22" rx="7" fill="currentColor" opacity="0.14" />
+                <path d="M4.5 15.5c2.2 0 3-6 5.3-6s2.4 4.2 4.4 4.2 2.5-5.2 5.3-5.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="19.5" cy="8.5" r="1.6" fill="currentColor" />
+              </svg>
+              FlowFi
+            </div>
+            <div class="tagline" id="s5-tag">See the <span class="serif">dip</span> before it happens.</div>
+            <div class="url" id="s5-url">flowfi-ai.vercel.app · live demo</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Voiceover (Kokoro af_heart) -->
+      <audio id="vo1" src="assets/vo/vo1.wav" data-start="0.45" data-track-index="20" data-volume="1"></audio>
+      <audio id="vo2" src="assets/vo/vo2.wav" data-start="3.45" data-track-index="21" data-volume="1"></audio>
+      <audio id="vo3" src="assets/vo/vo3.wav" data-start="9.05" data-track-index="22" data-volume="1"></audio>
+      <audio id="vo4" src="assets/vo/vo4.wav" data-start="15.0" data-track-index="23" data-volume="1"></audio>
+      <audio id="vo5" src="assets/vo/vo5.wav" data-start="21.3" data-track-index="24" data-volume="1"></audio>
+
+      <!-- Music bed, ducked under narration -->
+      <audio
+        id="music"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="24.5"
+        data-track-index="10"
+        data-volume="1"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.4,"v":0.16},{"t":17.7,"v":0.14},{"t":18.3,"v":0.3},{"t":21.0,"v":0.3},{"t":21.3,"v":0.15},{"t":23.6,"v":0.18},{"t":24.5,"v":0}]}]}'
+      ></audio>
+
+      <!-- SFX -->
+      <audio id="sfx-pin" src="assets/sfx/interface/drop_001.ogg" data-start="6.5" data-track-index="11" data-volume="0.6"></audio>
+      <audio id="sfx-chip1" src="assets/sfx/interface/click_003.ogg" data-start="9.83" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-chip4" src="assets/sfx/interface/click_002.ogg" data-start="11.46" data-track-index="13" data-volume="0.45"></audio>
+      <audio id="sfx-hold" src="assets/sfx/interface/switch_002.ogg" data-start="16.05" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-check" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="17.45" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-logo" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="21.0" data-track-index="16" data-volume="0.7"></audio>
+    </div>
+
+    <script>
+      // Real FlowFi engine output (Northstar Studio demo, base vs INV-104 paid on time).
+      const BASE = [1218000,1214197,1210394,1446591,1433789,1429986,1418683,1414880,1411077,1011274,1007471,483668,694865,691062,687259,683456,839653,835850,1512047,1508244,1244441,1176638,1592835,1589032,1581629,1577826,1574023,1568220,1564417,1560614,1556811];
+      const ONTIME = [1218000,1214197,1210394,1446591,1433789,1429986,1418683,1414880,2091077,1691274,1687471,1163668,1374865,1371062,1367259,1363456,1519653,1515850,1512047,1508244,1244441,1176638,1592835,1589032,1581629,1577826,1574023,1568220,1564417,1560614,1556811];
+      const FLOOR = 500000, LO = 300000, HI = 2250000, W = 1432, H = 420;
+      const X = (i) => (i / (BASE.length - 1)) * W;
+      const Y = (v) => 16 + ((HI - v) / (HI - LO)) * (H - 32);
+      const pathOf = (vals) => vals.map((v, i) => (i ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1)).join(" ");
+      const fmt = (minor) => "$" + (minor / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const NS = "http://www.w3.org/2000/svg";
+
+      function buildChart(svg, id, vals) {
+        const floorY = Y(FLOOR);
+        svg.innerHTML =
+          '<defs><linearGradient id="' + id + '-g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#9ef0c0" stop-opacity="0.22"/><stop offset="1" stop-color="#9ef0c0" stop-opacity="0"/></linearGradient>' +
+          '<clipPath id="' + id + '-under"><rect x="0" y="' + floorY + '" width="' + W + '" height="' + (H - floorY + 40) + '"/></clipPath>' +
+          '<clipPath id="' + id + '-reveal"><rect id="' + id + '-revealrect" x="0" y="-40" width="' + W + '" height="' + (H + 80) + '"/></clipPath></defs>' +
+          '<g clip-path="url(#' + id + '-reveal)">' +
+          '<path id="' + id + '-area" fill="url(#' + id + '-g)" d="' + pathOf(vals) + " L" + W + "," + H + " L0," + H + ' Z"/>' +
+          '<path id="' + id + '-line" fill="none" stroke="#eef1ec" stroke-width="4" stroke-linejoin="round" d="' + pathOf(vals) + '"/>' +
+          '<path id="' + id + '-risk" clip-path="url(#' + id + '-under)" fill="none" stroke="#ffb547" stroke-width="6" stroke-linejoin="round" d="' + pathOf(vals) + '"/>' +
+          "</g>" +
+          '<line x1="0" x2="' + W + '" y1="' + floorY + '" y2="' + floorY + '" stroke="#ffb547" stroke-width="2" stroke-dasharray="12 12" opacity="0.85"/>';
+      }
+      buildChart(document.getElementById("s2-svg"), "c2", BASE);
+      buildChart(document.getElementById("s5-svg"), "c5", BASE);
+
+      // Position the breach pin + floor label in card coordinates (svg box: left 64, bottom 60, 1432x420).
+      const cardH = 760, svgTop = cardH - 60 - H;
+      const pin = document.getElementById("s2-pin");
+      pin.style.left = 64 + X(11) - 13 + "px";
+      pin.style.top = svgTop + Y(BASE[11]) - 13 + "px";
+      const pinLabel = document.getElementById("s2-pinlabel");
+      pinLabel.style.left = 64 + X(11) + 24 + "px";
+      pinLabel.style.top = svgTop + Y(BASE[11]) - 92 + "px";
+      document.getElementById("s2-floorlabel").style.top = svgTop + Y(FLOOR) - 34 + "px";
+
+      const tl = gsap.timeline({ paused: true });
+      const E = "power3.out";
+
+      // Scene fades (inner wrappers only — the runtime owns clip visibility).
+      const fadeIn = (sel, t, d = 0.55) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, t);
+      const fadeOut = (sel, t, d = 0.45) => tl.to(sel, { opacity: 0, duration: d, ease: "power2.in" }, t);
+
+      // Scene 1 — cash counts up, then the "looks fine" tag.
+      fadeIn("#s1-in", 0, 0.4);
+      tl.fromTo("#s1-eyebrow", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 0.15);
+      const cash = { v: 0 };
+      tl.fromTo("#s1-cash", { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: E }, 0.2);
+      tl.fromTo(cash, { v: 0 }, { v: 1218000, duration: 1.1, ease: "power2.out", onUpdate: () => (document.getElementById("s1-cash").textContent = fmt(Math.round(cash.v / 100) * 100)) }, 0.2);
+      tl.fromTo("#s1-tag", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 1.3);
+      tl.to("#s1-cash", { y: -30, scale: 0.9, duration: 0.6, ease: "power2.in" }, 3.1);
+      fadeOut("#s1-in", 3.2);
+
+      // Scene 2 — the line draws across 30 days and breaches the floor.
+      fadeIn("#s2-in", 3.2);
+      tl.fromTo("#s2-card", { y: 60, scale: 0.97 }, { y: 0, scale: 1, duration: 0.9, ease: E }, 3.2);
+      tl.fromTo("#c2-revealrect", { attr: { width: 0 } }, { attr: { width: W }, duration: 3.0, ease: "power1.inOut" }, 3.7);
+      tl.fromTo("#s2-low", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 6.45);
+      tl.fromTo("#s2-flag", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 6.56); // beat-grid: 6.56s
+      tl.fromTo("#s2-pin", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.5)" }, 6.5);
+      tl.fromTo("#s2-pinlabel", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 6.6);
+      tl.fromTo("#s2-floorlabel", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 4.0);
+      fadeOut("#s2-in", 8.75);
+
+      // Scene 3 — drivers, then the copilot's real tool trace (beat-locked: 8.74s).
+      fadeIn("#s3-in", 8.74);
+      tl.fromTo("#s3-why", { x: -40 }, { x: 0, duration: 0.8, ease: E }, 8.74);
+      tl.fromTo("#s3-copilot", { x: 40 }, { x: 0, duration: 0.8, ease: E }, 8.74);
+      tl.fromTo("#d1-bar", { width: "0%" }, { width: "100%", duration: 0.9, ease: E }, 9.29);
+      tl.fromTo("#d2-bar", { width: "0%" }, { width: "76%", duration: 0.9, ease: E }, 9.45);
+      tl.fromTo("#d3-bar", { width: "0%" }, { width: "58%", duration: 0.9, ease: E }, 9.61);
+      // beat-grid: chips at 9.83, 10.37, 10.93, 11.46 — short mono labels, then held through 14.7s.
+      [["#c1", 9.83], ["#c2", 10.37], ["#c3", 10.93], ["#c4", 11.46]].forEach(([s, t]) =>
+        tl.fromTo(s, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.35, ease: E }, t),
+      );
+      tl.fromTo("#s3-answer", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 12.02);
+      fadeOut("#s3-in", 14.65);
+
+      // Scene 4 — hold to approve; check lands on the 17.47s strong cue.
+      fadeIn("#s4-in", 14.73);
+      tl.fromTo("#s4-card", { y: 50, scale: 0.97 }, { y: 0, scale: 1, duration: 0.8, ease: E }, 14.73);
+      tl.fromTo("#s4-caption", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 15.3);
+      tl.to(".ring-wrap", { scale: 0.93, duration: 0.25, ease: "power2.out" }, 16.05);
+      tl.to("#s4-ring", { attr: { "stroke-dashoffset": 0 }, duration: 1.37, ease: "none" }, 16.05);
+      tl.to(".ring-wrap", { scale: 1, duration: 0.4, ease: "back.out(3)" }, 17.42);
+      tl.fromTo("#s4-check", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.4)" }, 17.47); // beat-locked: 17.47s
+      tl.to("#s4-core", { opacity: 0, duration: 0.2 }, 17.47);
+      fadeOut("#s4-in", 18.5);
+
+      // Scene 5 — the line lifts above the floor, score recovers, then the logo.
+      fadeIn("#s5-chart-in", 18.56);
+      tl.fromTo("#s5-card", { y: 40 }, { y: 0, duration: 0.8, ease: E }, 18.56);
+      tl.to(["#c5-line", "#c5-risk"], { attr: { d: pathOf(ONTIME) }, duration: 1.1, ease: "power2.inOut" }, 19.1);
+      tl.to("#c5-area", { attr: { d: pathOf(ONTIME) + " L" + W + "," + H + " L0," + H + " Z" }, duration: 1.1, ease: "power2.inOut" }, 19.1);
+      const low = { v: 483668 }, score = { v: 47 };
+      tl.to(low, { v: 1163668, duration: 1.1, ease: "power2.inOut", onUpdate: () => (document.getElementById("s5-low").textContent = fmt(Math.round(low.v))) }, 19.1);
+      tl.to(score, { v: 63, duration: 1.1, ease: "power2.inOut", onUpdate: () => (document.getElementById("s5-score").textContent = Math.round(score.v)) }, 19.1);
+      tl.set("#s5-band", { textContent: "Stable", color: "#9ef0c0" }, 19.9);
+      tl.fromTo("#s5-flag", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 18.9);
+      fadeOut("#s5-chart-in", 20.75);
+      fadeIn("#s5-logo-in", 21.0, 0.6);
+      tl.fromTo("#s5-logo", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: E }, 21.0);
+      tl.fromTo("#s5-tag", { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: E }, 21.6);
+      tl.fromTo("#s5-url", { opacity: 0 }, { opacity: 1, duration: 0.6 }, 22.37); // beat-grid: 22.37s
+
+      // Audio-reactive: the mint glow breathes with the music bed's energy (subtle).
+      const glow = document.getElementById("glow");
+      const AE = window.AUDIO_ENERGY;
+      const frames = Math.min(AE.values.length, Math.round(24.5 * AE.fps));
+      for (let f = 0; f < frames; f++) {
+        tl.call(((e) => () => {
+          glow.style.opacity = (0.38 + 0.4 * e).toFixed(3);
+          glow.style.transform = "scale(" + (0.96 + 0.08 * e).toFixed(3) + ")";
+        })(AE.values[f]), [], f / AE.fps);
+      }
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

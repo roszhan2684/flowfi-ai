@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Logo } from "../shared/Logo";
 
 const LINKS = [
+  ["Film", "#film"],
   ["Forecast", "#forecast"],
   ["Copilot", "#copilot"],
   ["Reliability", "#reliability"],

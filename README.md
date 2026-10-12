@@ -4,6 +4,8 @@
 
 **Live demo:** https://flowfi-ai.vercel.app · runs entirely on fictional data for *Northstar Studio*. No sign-up, no keys.
 
+**Launch film (24s, voiceover):** [`public/flowfi-film.mp4`](public/flowfi-film.mp4), built with HyperFrames from [`brag-output/composition`](brag-output/composition). Every number in it is real engine output.
+
 > Honesty first: this is a portfolio build. Everything under **Measured evidence** was produced by code in this repo. Everything under **Roadmap** is not built yet.
 
 ---

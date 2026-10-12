@@ -330,3 +330,21 @@ export function Footer() {
     </footer>
   );
 }
+
+export function Film() {
+  return (
+    <section id="film" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-24 md:px-6 md:py-32">
+      <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+        <h2 className="text-[clamp(36px,6vw,72px)] leading-[0.98] font-medium tracking-[-0.04em]">
+          <SplitHeadline text="24 seconds," /> <span className="serif text-accent italic"><SplitHeadline text="one dip." delay={0.1} /></span>
+        </h2>
+        <Reveal delay={0.15}>
+          <span className="font-mono text-[11px] tracking-[0.16em] text-dim uppercase">Launch film · sound on</span>
+        </Reveal>
+      </div>
+      <Reveal delay={0.1} className="overflow-hidden rounded-[28px] border border-line bg-surface shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)]">
+        <video className="block aspect-video w-full" src="/flowfi-film.mp4" poster="/flowfi-film.jpg" controls playsInline preload="none" aria-label="FlowFi launch film" />
+      </Reveal>
+    </section>
+  );
+}
